@@ -15,7 +15,7 @@ public class TowerWeapon : MonoBehaviour
     private float attackRate = 0.5f;
     [SerializeField]
     private int attackDamage = 1;
-    private Transform attackTarget = null;
+    private Vector2 attackTarget = Vector2.zero;
 
     private Player playerScript;
 
@@ -36,8 +36,8 @@ public class TowerWeapon : MonoBehaviour
 
     private void RotateToTarget()
     {
-        float dx = attackTarget.position.x - transform.position.x;
-        float dy = attackTarget.position.y - transform.position.y;
+        float dx = attackTarget.x - transform.position.x;
+        float dy = attackTarget.y - transform.position.y;
 
         float degree = Mathf.Atan2(dy, dx) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.Euler(0, 0, degree);
@@ -49,13 +49,16 @@ public class TowerWeapon : MonoBehaviour
         {
             yield return new WaitForSeconds(attackRate);
 
-            SpawnProjectile();
+            if(playerScript != null)
+            {
+                SpawnProjectile();
+            }
         }
     }
 
     private void SpawnProjectile()
     {
         GameObject clone = Instantiate(projectilePrefab, spawnPoint.position, Quaternion.identity);
-        clone.GetComponent<Projectile>().Setup(attackTarget, attackDamage);
+        clone.GetComponent<Projectile>().Setup(playerScript.transform, attackDamage);
     }
 }

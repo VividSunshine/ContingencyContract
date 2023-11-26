@@ -7,9 +7,13 @@ public class Projectile : MonoBehaviour
     private Transform target;
     private int damage;
     private float projectileSpeed = 5.0f;
+    public float screenBoundaryX = 8f;
+    public float screenBoundaryY = -5f;
+    public Score score;
 
     public void Setup(Transform target, int damage)
     {
+        score = GameObject.FindGameObjectWithTag("Score").GetComponent<Score>();
         if (target == null) return;
         this.target = target;
         this.damage = damage;
@@ -40,6 +44,13 @@ public class Projectile : MonoBehaviour
 
         if (player == null)
         {
+            Destroy(gameObject);
+        }
+
+        //총알이 화면 밖에 벗어나면
+        if(transform.position.x > screenBoundaryX || transform.position.x < -(screenBoundaryX) || transform.position.y < screenBoundaryY)
+        {
+            score.AddScore(1);
             Destroy(gameObject);
         }
     }

@@ -5,17 +5,32 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField]
-    private GameObject playerHPSlider;
-    [SerializeField]
     private Transform canvasTransform;
 
     public float speed = 5f;
-    public Transform savedPosition;
+    public Vector2 savedPosition;
+
+    private float minX, maxX;
 
     private void Start()
     {
-        savedPosition = transform;
-        //SpawnPlayerHPSlider(gameObject);
+        SaveInitialPosition();
+        SetScreenLimits();
+    }
+
+    private void SetScreenLimits()
+    {
+        Camera mainCamera = Camera.main;
+
+        float playerWidth = GetComponent<Renderer>().bounds.size.x / 2;
+        minX = mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).x + playerWidth;
+        maxX = mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x - playerWidth;
+
+    }
+
+    private void SaveInitialPosition()
+    {
+        savedPosition = transform.position;
     }
 
     private void Update()
@@ -23,25 +38,19 @@ public class Player : MonoBehaviour
         float horizontalInput = Input.GetAxis("Horizontal");
         Vector2 movement = new Vector2(horizontalInput, 0);
         transform.Translate(movement * speed * Time.deltaTime);
+
+        float clampedX = Mathf.Clamp(transform.position.x, minX, maxX);
+        transform.position = new Vector3(clampedX, transform.position.y, transform.position.z);
     }
 
-    public Transform GetSavedPosition()
+    public Vector2 GetSavedPosition()
     {
         return savedPosition;
     }
+
 
     public void onDie()
     {
         Destroy(gameObject);
     }
-
-    /*private void SpawnPlayerHPSlider(GameObject player)
-    {
-        GameObject sliderClone = Instantiate(playerHPSliderPrefab);
-        sliderClone.transform.SetParent(canvasTransform);
-        sliderClone.transform.localScale = Vector3.one;
-
-        sliderClone.GetComponent<SliderPositionAutoSetter>().Setup(player.transform);
-        sliderClone.GetComponent<PlayerHPViewer>().Setup(player.GetComponent<PlayerHP>());
-    }*/
 }

@@ -11,6 +11,9 @@ public class PlayerHP : MonoBehaviour
     private Player player;
     private SpriteRenderer spriteRenderer;
 
+    [SerializeField]
+    public HPbar HPbar;
+
     public float MaxHP => maxHP;
     public float CurrentHP => currentHP;
 
@@ -19,6 +22,18 @@ public class PlayerHP : MonoBehaviour
         currentHP = maxHP;
         player = GetComponent<Player>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        if (HPbar != null)
+        {
+            HPbar.SetHP(currentHP);
+        }
+    }
+
+    public void Update()
+    {
+        if (HPbar != null)
+        {
+            HPbar.SetHP(currentHP);
+        }
     }
 
     public void TakeDamage(float damage)
